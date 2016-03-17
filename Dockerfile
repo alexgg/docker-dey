@@ -13,6 +13,6 @@ WORKDIR ${HOME}/workspace/ccimx6sbc
 RUN echo 'INHERIT += "rm_work"' >> ${HOME}/workspace/ccimx6sbc/conf/local.conf && echo 'DISTRO_FEATURES_remove = "x11"' >> ${HOME}/workspace/ccimx6sbc/conf/local.conf
 
 # Build default image
-RUN source ${HOME}/workspace/ccimx6sbc/dey-setup-environment && bitbake dey-image-qt
+RUN source ${HOME}/workspace/ccimx6sbc/dey-setup-environment && bitbake dey-image-qt && rm -Rf downloads tmp
 
 
