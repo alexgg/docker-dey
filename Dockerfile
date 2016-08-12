@@ -1,4 +1,4 @@
-FROM aggurio/dey-base:dey-2.0-r3
+FROM aggurio/dey-base:latest
 
 MAINTAINER Alex Gonzalez <alex.gonzalez@digi.com>
 
