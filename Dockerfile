@@ -1,29 +1,21 @@
-FROM aggurio/dey-base:latest
+ARG DEY_BASE_TAG="latest"
+FROM aggurio/dey-base:$DEY_BASE_TAG
 
 MAINTAINER Alex Gonzalez <alex.gonzalez@digi.com>
 
-ENV HOME="/home/dey"
+ENV DEY_BUILD_DIR="/home/dey/workspace"
+ARG DEY_PLATFORM="ccimx6ulsbc"
+ARG DEY_TARGET_IMAGES="dey-image-qt"
+ARG DISTRO_FEATURES_REMOVE=""
+ENV DL_DIR="/home/dey/downloads"
+ENV SSTATE_DIR="/home/dey/sstate-dir"
 
-# Create project
-RUN mkdir -p ${HOME}/workspace/ccimx6sbc && cd ${HOME}/workspace/ccimx6sbc && source /usr/local/dey-2.0/mkproject.sh -p ccimx6sbc <<< "y"
+COPY entrypoint.sh /usr/local/bin/
 
-WORKDIR ${HOME}/workspace/ccimx6sbc
+WORKDIR ${DEY_BUILD_DIR}
+USER dey
 
-# Configure local.conf file
-RUN echo 'INHERIT += "rm_work"' >> ${HOME}/workspace/ccimx6sbc/conf/local.conf && echo 'DISTRO_FEATURES_remove = "x11"' >> ${HOME}/workspace/ccimx6sbc/conf/local.conf
-
-# Build default image
-RUN source ${HOME}/workspace/ccimx6sbc/dey-setup-environment && bitbake dey-image-qt && rm -Rf downloads tmp
-
-# Create project
-RUN mkdir -p ${HOME}/workspace/ccimx6ulstarter && cd ${HOME}/workspace/ccimx6ulstarter && source /usr/local/dey-2.0/mkproject.sh -p ccimx6ulstarter <<< "y"
-
-WORKDIR ${HOME}/workspace/ccimx6ulstarter
-
-# Configure local.conf file
-RUN echo 'INHERIT += "rm_work"' >> ${HOME}/workspace/ccimx6ulstarter/conf/local.conf
-
-# Build default image
-RUN source ${HOME}/workspace/ccimx6ulstarter/dey-setup-environment && bitbake core-image-base && rm -Rf downloads tmp
-
-
+ENV DEY_PLATFORM=$DEY_PLATFORM
+ENV DEY_TARGET_IMAGES=$DEY_TARGET_IMAGES
+ENV DISTRO_FEATURES_REMOVE=$DISTRO_FEATURES_REMOVE
+ENTRYPOINT ["entrypoint.sh"]

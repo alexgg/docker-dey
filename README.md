@@ -6,8 +6,6 @@ Digi Embedded Yocto is [Digi International's](http://www.digi.com/) professional
 
 This docker image is not an official Digi product.
 
-However, it's a good way to test run a Digi Embedded Yocto release as it provides a ready to use pre-configured and pre-compiled environment.
-
 To run on a Ubuntu system,
 
 ## Install docker
@@ -16,18 +14,68 @@ To run on a Ubuntu system,
 For convenience, link docker.io to docker: 
 `sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker`
 
-## Run the image
-`sudo docker run -it --rm aggurio/docker-dey:latest bash`
+## Build the container
 
-## Rebuild your project
-Digi Embedded Yocto has been installed in **/usr/local/dey-2.0**, with ready to use projects for the supported platforms under **/home/dey/workspace/**.
+`sudo docker build --build-arg DEY_BASE_TAG=$DEY_VERSION \
+ --build-arg DEY_PLATFORM=$DEY_PLATFORM \
+ --build-arg DEY_TARGET_IMAGES=$DEY_TARGET_IMAGES \
+ --build-arg DISTRO_FEATURES_REMOVE=$DISTRO_FEATURES_REMOVE \
 
-On login you will be inside a product's project.
+Where the environmental variables are:
 
-To regenerate the images from the shared state cache just do:
+* DEY_VERSION: The Digi Embedded Yocto version. There should be an aggurio/dey-base tag with the version, for example 2.4.
+* DEY_PLATFORM: Single platform to build for. Defaults to "ccimx6ulsbc".
+* DEY_TARGET_IMAGES: One or more target images to build for th given platform. Defaults to "dey-image-qt".
+* DISTRO_FEATURES_REMOVE: Yocto distro features to remove from the build, which typically depends on the images to build for. Defaults to empty.
 
-`source dey-setup-environment`
+Some examples:
 
-and
+To build the default ccimx6ulsbc dey-image-qt image:
 
-`bitbake dey-image-qt`
+`sudo docker build aggurio/docker-dey:latest`
+
+To build core-image-base for the ccimx6ulsbc:
+
+`DEY_TARGET_IMAGES="core-image-base" \
+ DISTRO_FEATURES_REMOVE="x11" \
+ sudo docker build \
+ --build-arg DEY_TARGET_IMAGES=$DEY_TARGET_IMAGES \
+ --build-arg DISTRO_FEATURES_REMOVE=$DISTRO_FEATURES_REMOVE \
+ aggurio/docker-dey:latest`
+
+To built dey-image-qt-xwayland for the ccimx8x-sbc-pro:
+
+`DEY_PLATFORM="ccimx8x-sbc-pro" \
+ sudo docker build \
+ --build-arg DEY_PLATFORM=$DEY_PLATFORM \
+ aggurio/docker-dey:latest`
+
+To build dey-image-qt-fb for the ccimx8x-sbc-pro:
+
+`DEY_PLATFORM="ccimx8x-sbc-pro" \
+ DISTRO_FEATURES_REMOVE = "x11 wayland vulkan" \
+ sudo docker build \
+ --build-arg DEY_PLATFORM=$DEY_PLATFORM \
+ --build-arg DISTRO_FEATURES_REMOVE=$DISTRO_FEATURES_REMOVE \
+ aggurio/docker-dey:latest`
+
+## Build your project
+
+Once the container image is ready, you can run it with.
+
+`sudo docker run -it --rm \
+--volume ${HOST_BUILD_DIR}:/home/dey/workspace
+aggurio/docker-dey:latest`
+
+Where HOST_BUILD_DIR is the path to the build directory on the host.
+
+Pre-populated downloads and state-cache directories on the host can be passed
+to the container with:
+
+`sudo docker run -it --rm \
+--volume ${HOST_BUILD_DIR}:/home/dey/workspace
+--volume ${HOST_DL_DIR}:/home/dey/downloads
+--volume ${HOST_STATE_DIR}:/home/dey/sstate-dir
+aggurio/docker-dey:latest`
+
+
