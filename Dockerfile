@@ -10,7 +10,9 @@ ARG DISTRO_FEATURES_REMOVE=""
 ENV DL_DIR="/home/dey/downloads"
 ENV SSTATE_DIR="/home/dey/sstate-dir"
 
-COPY entrypoint.sh /usr/local/bin/
+ARG WINDOWS=""
+COPY entrypoint.sh $DEY_INSTALL_PATH
+RUN if [ -z "$WINDOWS" ]; then : ; else dos2unix -n $DEY_INSTALL_PATH/entrypoint.sh /tmp/entrypoint.sh && mv -f /tmp/entrypoint.sh $DEY_INSTALL_PATH/entrypoint.sh ; fi
 
 WORKDIR ${DEY_BUILD_DIR}
 USER dey
@@ -18,4 +20,4 @@ USER dey
 ENV DEY_PLATFORM=$DEY_PLATFORM
 ENV DEY_TARGET_IMAGES=$DEY_TARGET_IMAGES
 ENV DISTRO_FEATURES_REMOVE=$DISTRO_FEATURES_REMOVE
-ENTRYPOINT ["entrypoint.sh"]
+ENTRYPOINT $DEY_INSTALL_PATH/entrypoint.sh
