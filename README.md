@@ -16,10 +16,10 @@ For convenience, link docker.io to docker:
 
 ## Build the container
 
-`sudo docker build --build-arg DEY_BASE_TAG=$DEY_VERSION \
+`docker build --build-arg DEY_BASE_TAG=$DEY_VERSION \
  --build-arg DEY_PLATFORM=$DEY_PLATFORM \
  --build-arg DEY_TARGET_IMAGES=$DEY_TARGET_IMAGES \
- --build-arg DISTRO_FEATURES_REMOVE=$DISTRO_FEATURES_REMOVE \
+ --build-arg DISTRO_FEATURES_REMOVE=$DISTRO_FEATURES_REMOVE <Dockerfile>
 
 Where the environmental variables are:
 
@@ -32,40 +32,40 @@ Some examples:
 
 To build the default ccimx6ulsbc dey-image-qt image:
 
-`sudo docker build aggurio/docker-dey:latest`
+`docker build <Dockerfile>`
 
 To build core-image-base for the ccimx6ulsbc:
 
 `DEY_TARGET_IMAGES="core-image-base" \
  DISTRO_FEATURES_REMOVE="x11" \
- sudo docker build \
+ docker build \
  --build-arg DEY_TARGET_IMAGES=$DEY_TARGET_IMAGES \
  --build-arg DISTRO_FEATURES_REMOVE=$DISTRO_FEATURES_REMOVE \
- aggurio/docker-dey:latest`
+ <Dockerfile>`
 
 To built dey-image-qt-xwayland for the ccimx8x-sbc-pro:
 
 `DEY_PLATFORM="ccimx8x-sbc-pro" \
- sudo docker build \
+ docker build \
  --build-arg DEY_PLATFORM=$DEY_PLATFORM \
- aggurio/docker-dey:latest`
+ <Dockerfile>`
 
 To build dey-image-qt-fb for the ccimx8x-sbc-pro:
 
 `DEY_PLATFORM="ccimx8x-sbc-pro" \
- DISTRO_FEATURES_REMOVE = "x11 wayland vulkan" \
- sudo docker build \
+ DISTRO_FEATURES_REMOVE="x11 wayland vulkan" \
+ docker build \
  --build-arg DEY_PLATFORM=$DEY_PLATFORM \
  --build-arg DISTRO_FEATURES_REMOVE=$DISTRO_FEATURES_REMOVE \
- aggurio/docker-dey:latest`
+ <Dockerfile>`
 
 ## Build your project
 
 Once the container image is ready, you can run it with.
 
-`sudo docker run -it --rm \
+`docker run -it --rm \
 --volume ${HOST_BUILD_DIR}:/home/dey/workspace
-aggurio/docker-dey:latest`
+<container-id>`
 
 Where HOST_BUILD_DIR is the path to the build directory on the host.
 
@@ -76,6 +76,6 @@ to the container with:
 --volume ${HOST_BUILD_DIR}:/home/dey/workspace
 --volume ${HOST_DL_DIR}:/home/dey/downloads
 --volume ${HOST_STATE_DIR}:/home/dey/sstate-dir
-aggurio/docker-dey:latest`
+<container-id>`
 
 
